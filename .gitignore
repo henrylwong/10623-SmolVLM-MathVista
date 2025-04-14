@@ -10,9 +10,13 @@ checkpoints/*.pt
 *.ipynb_checkpoints
 *.pyc
 *__pycache__
+*.swp
 
 # Secret Environment Variables
 .env*
 
 # Output
 _results
+
+# HF Cache
+hf_cache/

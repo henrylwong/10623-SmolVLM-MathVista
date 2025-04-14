@@ -3,9 +3,10 @@ import io
 import logging
 import os
 import sys
+import pdb
 
 from datasets import load_dataset
-from openai import AzureOpenAI
+# from openai import AzureOpenAI
 from rich.logging import RichHandler
 from tqdm import tqdm
 
@@ -57,6 +58,7 @@ def parse_args():
     parser.add_argument('--dataset_name', type=str, default='AI4Math/MathVista')
     parser.add_argument('--test_split_name', type=str, default='testmini')
     parser.add_argument('--data_dir', type=str, default='../data')
+    parser.add_argument('--cache_dir', type=str, default='../hf_cache')
     parser.add_argument('--input_file', type=str, default='testmini.json')
     # output
     parser.add_argument('--output_dir', type=str, default='../results/bard')
@@ -76,9 +78,9 @@ def parse_args():
     parser.add_argument(
         '--model',
         type=str,
-        default='gpt-3.5-turbo',
+        default='smolvlm',
         help='llm engine',
-        choices=['gpt-3.5-turbo', 'claude-2', 'gpt4', 'gpt-4-0613', 'bard'],
+        choices=['smolvlm', 'gpt-3.5-turbo', 'claude-2', 'gpt4', 'gpt-4-0613', 'bard'],
     )
     parser.add_argument('--key', type=str, default='', help='key for llm api')
     # query
@@ -106,7 +108,7 @@ def main():
 
     # load data
     logging.info(f"Loading dataset {args.dataset_name}, split {args.test_split_name}...")
-    data_list = load_dataset(args.dataset_name, split=args.test_split_name)
+    data_list = load_dataset(args.dataset_name, split=args.test_split_name, cache_dir=args.cache_dir)
     # Convert Hugging Face data into dictionary to match local data format
     # TODO: Convert scripts not to depend on dictionary .json format. Update to use .jsonl format
     data = {item['pid']: item for item in data_list}
@@ -145,64 +147,60 @@ def main():
         query_data = create_query_data(data, caption_data, ocr_data, args)
 
     # If we were given a custom model path, load that model, otherwise use a remote service model
-    if args.model_path:
-        # from models import llava
+    model_name = args.azure_openai_model if args.azure_openai_model else args.model
+    logging.info(f"Loading {model_name}...")
 
-        logging.info(f"Loading model from {args.model_path}...")
-        # TODO: Add support for local models
-        raise NotImplementedError("Local models are not yet supported.")
-    else:
-        model_name = args.azure_openai_model if args.azure_openai_model else args.model
-        logging.info(f"Loading {model_name}...")
+    if model_name == 'smolvlm': # @hlwong: add smolvlm model
+        from models import smolvlm
+        model = smolvlm.SmolVLMInfer()
+    elif model_name == 'bard':
+        from models import bard
 
-        if model_name == 'bard':
-            from models import bard
-
-            if args.key == '':
-                logging.info("Loading key from environment variable")
-                key = os.environ['_BARD_API_KEY']
-            else:
-                key = args.key
-            model = bard.Bard_Model(key)
-        elif "gpt" in model_name:
-            from models import gpt
-
-            key = args.azure_openai_api_key if args.azure_openai_api_key else args.key
-            if key == '':
-                key = os.getenv("OPENAI_API_KEY")
-
-            assert (
-                args.azure_openai_api_endpoint is not None
-            ), "Env var AZURE_OPENAI_API_ENDPOINT is not set but is required for OpenAI client."
-            assert (
-                args.azure_openai_api_key is not None
-            ), "Env var AZURE_OPENAI_API_KEY is not set but is required for OpenAI client."
-            assert (
-                args.azure_openai_api_version is not None
-            ), "Env var AZURE_OPENAI_API_VERSION is not set but is required for OpenAI client."
-            assert (
-                args.azure_openai_model is not None
-            ), "Env var AZURE_OPENAI_MODEL is not set but is required for OpenAI client."
-
-            client = AzureOpenAI(
-                azure_endpoint=args.azure_openai_api_endpoint,
-                api_key=args.azure_openai_api_key,
-                api_version=args.azure_openai_api_version,
-            )
-
-            model = gpt.GPT_Model(client=client, model=model_name)
-
-        elif "claude" in model_name:
-            from models import claude
-
-            if args.key == '':
-                logging.info("Loading token from environment variable")
-                key = os.environ.get("ANTHROPIC_API_KEY")
-            else:
-                key = args.key
-            model = claude.Claude_Model(model_name, key)
+        if args.key == '':
+            logging.info("Loading key from environment variable")
+            key = os.environ['_BARD_API_KEY']
         else:
-            raise ValueError(f"Model {model_name} not supported.")
+            key = args.key
+        model = bard.Bard_Model(key)
+    elif "gpt" in model_name:
+        from models import gpt
+
+        key = args.azure_openai_api_key if args.azure_openai_api_key else args.key
+        if key == '':
+            key = os.getenv("OPENAI_API_KEY")
+
+        assert (
+            args.azure_openai_api_endpoint is not None
+        ), "Env var AZURE_OPENAI_API_ENDPOINT is not set but is required for OpenAI client."
+        assert (
+            args.azure_openai_api_key is not None
+        ), "Env var AZURE_OPENAI_API_KEY is not set but is required for OpenAI client."
+        assert (
+            args.azure_openai_api_version is not None
+        ), "Env var AZURE_OPENAI_API_VERSION is not set but is required for OpenAI client."
+        assert (
+            args.azure_openai_model is not None
+        ), "Env var AZURE_OPENAI_MODEL is not set but is required for OpenAI client."
+
+        client = AzureOpenAI(
+            azure_endpoint=args.azure_openai_api_endpoint,
+            api_key=args.azure_openai_api_key,
+            api_version=args.azure_openai_api_version,
+        )
+
+        model = gpt.GPT_Model(client=client, model=model_name)
+
+    elif "claude" in model_name:
+        from models import claude
+
+        if args.key == '':
+            logging.info("Loading token from environment variable")
+            key = os.environ.get("ANTHROPIC_API_KEY")
+        else:
+            key = args.key
+        model = claude.Claude_Model(model_name, key)
+    else:
+        raise ValueError(f"Model {model_name} not supported.")
 
     logging.info(f"Model loaded.")
 
@@ -316,3 +314,4 @@ if __name__ == '__main__':
         logging.getLogger(module).setLevel(logging.WARNING)
 
     main()
+

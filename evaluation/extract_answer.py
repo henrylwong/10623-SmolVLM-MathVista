@@ -3,7 +3,7 @@ import logging
 import os
 import re
 
-from openai import AzureOpenAI
+# from openai import AzureOpenAI
 from rich.logging import RichHandler
 from tqdm import tqdm
 
