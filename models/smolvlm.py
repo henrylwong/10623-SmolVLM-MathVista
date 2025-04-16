@@ -51,6 +51,18 @@ class SmolVLMInfer(object):
             return ""
         return response
 
+    def get_multiple_responses(self, user_prompt, decoded_image=None, n=5):
+    messages = [self._create_query(user_prompt, decoded_image)] * n
+    responses = []
+    for msg in messages:
+        try:
+            result = self.infer([msg])
+            responses.append(result)
+        except Exception as e:
+            logging.error(f"Error in response generation: {e}")
+            responses.append("")
+    return responses
+
     def infer(self, messages):
         logging.debug(f"Infer: {messages}")  # Log inference start
         inputs = self.processor.apply_chat_template(
