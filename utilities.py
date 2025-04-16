@@ -7,6 +7,16 @@ import cv2
 import PIL.Image as Image
 from word2number import w2n
 
+from collections import Counter
+
+def majority_vote(candidates):
+    counts = Counter(candidates)
+    if not counts:
+        return ""
+    max_count = max(counts.values())
+    top = [k for k, v in counts.items() if v == max_count]
+    return top[0]  # break ties 
+
 
 def create_dir(output_dir):
     if not os.path.exists(output_dir):
