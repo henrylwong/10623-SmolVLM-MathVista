@@ -1,0 +1,395 @@
+{
+    "average": {
+        "accuracy": 0.503,
+        "correct": 503,
+        "total": 1000
+    },
+    "question_type": {
+        "multi_choice": {
+            "accuracy": 0.5351851851851852,
+            "correct": 289,
+            "total": 540
+        },
+        "free_form": {
+            "accuracy": 0.4652173913043478,
+            "correct": 214,
+            "total": 460
+        }
+    },
+    "answer_type": {
+        "text": {
+            "accuracy": 0.5351851851851852,
+            "correct": 289,
+            "total": 540
+        },
+        "integer": {
+            "accuracy": 0.5047846889952153,
+            "correct": 211,
+            "total": 418
+        },
+        "float": {
+            "accuracy": 0.075,
+            "correct": 3,
+            "total": 40
+        },
+        "list": {
+            "accuracy": 0.0,
+            "correct": 0,
+            "total": 2
+        }
+    },
+    "language": {
+        "english": {
+            "accuracy": 0.5106837606837606,
+            "correct": 478,
+            "total": 936
+        },
+        "chinese": {
+            "accuracy": 0.4032258064516129,
+            "correct": 25,
+            "total": 62
+        },
+        "persian": {
+            "accuracy": 0.0,
+            "correct": 0,
+            "total": 2
+        }
+    },
+    "source": {
+        "PMC-VQA": {
+            "accuracy": 1.0,
+            "correct": 1,
+            "total": 1
+        },
+        "ScienceQA": {
+            "accuracy": 0.8888888888888888,
+            "correct": 8,
+            "total": 9
+        },
+        "A-OKVQA": {
+            "accuracy": 0.8333333333333334,
+            "correct": 5,
+            "total": 6
+        },
+        "DVQA": {
+            "accuracy": 0.7741935483870968,
+            "correct": 48,
+            "total": 62
+        },
+        "IconQA": {
+            "accuracy": 0.7580645161290323,
+            "correct": 47,
+            "total": 62
+        },
+        "FigureQA": {
+            "accuracy": 0.7580645161290323,
+            "correct": 47,
+            "total": 62
+        },
+        "MapQA": {
+            "accuracy": 0.75,
+            "correct": 6,
+            "total": 8
+        },
+        "CLEVR-Math": {
+            "accuracy": 0.7258064516129032,
+            "correct": 45,
+            "total": 62
+        },
+        "AI2D": {
+            "accuracy": 0.6511627906976745,
+            "correct": 28,
+            "total": 43
+        },
+        "Super-CLEVR": {
+            "accuracy": 0.6129032258064516,
+            "correct": 38,
+            "total": 62
+        },
+        "TabMWP": {
+            "accuracy": 0.5967741935483871,
+            "correct": 37,
+            "total": 62
+        },
+        "DocVQA": {
+            "accuracy": 0.5833333333333334,
+            "correct": 7,
+            "total": 12
+        },
+        "PlotQA": {
+            "accuracy": 0.5789473684210527,
+            "correct": 11,
+            "total": 19
+        },
+        "VQA-AS": {
+            "accuracy": 0.5714285714285714,
+            "correct": 4,
+            "total": 7
+        },
+        "TQA": {
+            "accuracy": 0.5625,
+            "correct": 9,
+            "total": 16
+        },
+        "FunctionQA": {
+            "accuracy": 0.5161290322580645,
+            "correct": 32,
+            "total": 62
+        },
+        "TextVQA": {
+            "accuracy": 0.5,
+            "correct": 3,
+            "total": 6
+        },
+        "VQA-RAD": {
+            "accuracy": 0.5,
+            "correct": 1,
+            "total": 2
+        },
+        "UniGeo": {
+            "accuracy": 0.4838709677419355,
+            "correct": 30,
+            "total": 62
+        },
+        "VQA2.0": {
+            "accuracy": 0.40625,
+            "correct": 13,
+            "total": 32
+        },
+        "GeoQA+": {
+            "accuracy": 0.4032258064516129,
+            "correct": 25,
+            "total": 62
+        },
+        "Geometry3K": {
+            "accuracy": 0.4032258064516129,
+            "correct": 25,
+            "total": 62
+        },
+        "ChartQA": {
+            "accuracy": 0.3,
+            "correct": 15,
+            "total": 50
+        },
+        "PaperQA": {
+            "accuracy": 0.2631578947368421,
+            "correct": 5,
+            "total": 19
+        },
+        "GEOS": {
+            "accuracy": 0.18181818181818182,
+            "correct": 4,
+            "total": 22
+        },
+        "IQTest": {
+            "accuracy": 0.13513513513513514,
+            "correct": 5,
+            "total": 37
+        },
+        "TheoremQA": {
+            "accuracy": 0.09090909090909091,
+            "correct": 1,
+            "total": 11
+        },
+        "KVQA": {
+            "accuracy": 0.05,
+            "correct": 3,
+            "total": 60
+        },
+        "SciBench": {
+            "accuracy": 0.0,
+            "correct": 0,
+            "total": 17
+        },
+        "ParsVQA-Caps": {
+            "accuracy": 0.0,
+            "correct": 0,
+            "total": 2
+        },
+        "VizWiz": {
+            "accuracy": 0.0,
+            "correct": 0,
+            "total": 1
+        }
+    },
+    "category": {
+        "general-vqa": {
+            "accuracy": 0.5369565217391304,
+            "correct": 247,
+            "total": 460
+        },
+        "math-targeted-vqa": {
+            "accuracy": 0.4740740740740741,
+            "correct": 256,
+            "total": 540
+        }
+    },
+    "task": {
+        "math word problem": {
+            "accuracy": 0.6935483870967742,
+            "correct": 129,
+            "total": 186
+        },
+        "figure question answering": {
+            "accuracy": 0.5353159851301115,
+            "correct": 144,
+            "total": 269
+        },
+        "textbook question answering": {
+            "accuracy": 0.4936708860759494,
+            "correct": 78,
+            "total": 158
+        },
+        "geometry problem solving": {
+            "accuracy": 0.40384615384615385,
+            "correct": 84,
+            "total": 208
+        },
+        "visual question answering": {
+            "accuracy": 0.37988826815642457,
+            "correct": 68,
+            "total": 179
+        }
+    },
+    "context": {
+        "map chart": {
+            "accuracy": 0.75,
+            "correct": 6,
+            "total": 8
+        },
+        "abstract scene": {
+            "accuracy": 0.7049180327868853,
+            "correct": 43,
+            "total": 61
+        },
+        "synthetic scene": {
+            "accuracy": 0.6693548387096774,
+            "correct": 83,
+            "total": 124
+        },
+        "medical image": {
+            "accuracy": 0.6666666666666666,
+            "correct": 2,
+            "total": 3
+        },
+        "scatter plot": {
+            "accuracy": 0.6388888888888888,
+            "correct": 23,
+            "total": 36
+        },
+        "bar chart": {
+            "accuracy": 0.6386554621848739,
+            "correct": 76,
+            "total": 119
+        },
+        "pie chart": {
+            "accuracy": 0.5833333333333334,
+            "correct": 7,
+            "total": 12
+        },
+        "document image": {
+            "accuracy": 0.5833333333333334,
+            "correct": 7,
+            "total": 12
+        },
+        "table": {
+            "accuracy": 0.5571428571428572,
+            "correct": 39,
+            "total": 70
+        },
+        "function plot": {
+            "accuracy": 0.5161290322580645,
+            "correct": 32,
+            "total": 62
+        },
+        "line plot": {
+            "accuracy": 0.5128205128205128,
+            "correct": 20,
+            "total": 39
+        },
+        "scientific figure": {
+            "accuracy": 0.45652173913043476,
+            "correct": 42,
+            "total": 92
+        },
+        "geometry diagram": {
+            "accuracy": 0.42592592592592593,
+            "correct": 92,
+            "total": 216
+        },
+        "natural image": {
+            "accuracy": 0.23853211009174313,
+            "correct": 26,
+            "total": 109
+        },
+        "puzzle test": {
+            "accuracy": 0.1388888888888889,
+            "correct": 5,
+            "total": 36
+        },
+        "violin plot": {
+            "accuracy": 0.0,
+            "correct": 0,
+            "total": 1
+        }
+    },
+    "grade": {
+        "elementary school": {
+            "accuracy": 0.6169154228855721,
+            "correct": 124,
+            "total": 201
+        },
+        "daily life": {
+            "accuracy": 0.5091863517060368,
+            "correct": 194,
+            "total": 381
+        },
+        "high school": {
+            "accuracy": 0.4738562091503268,
+            "correct": 145,
+            "total": 306
+        },
+        "college": {
+            "accuracy": 0.35714285714285715,
+            "correct": 40,
+            "total": 112
+        }
+    },
+    "skills": {
+        "statistical reasoning": {
+            "accuracy": 0.5980066445182725,
+            "correct": 180,
+            "total": 301
+        },
+        "arithmetic reasoning": {
+            "accuracy": 0.49575070821529743,
+            "correct": 175,
+            "total": 353
+        },
+        "scientific reasoning": {
+            "accuracy": 0.47540983606557374,
+            "correct": 58,
+            "total": 122
+        },
+        "geometry reasoning": {
+            "accuracy": 0.4225941422594142,
+            "correct": 101,
+            "total": 239
+        },
+        "algebraic reasoning": {
+            "accuracy": 0.41637010676156583,
+            "correct": 117,
+            "total": 281
+        },
+        "numeric commonsense": {
+            "accuracy": 0.3472222222222222,
+            "correct": 50,
+            "total": 144
+        },
+        "logical reasoning": {
+            "accuracy": 0.13513513513513514,
+            "correct": 5,
+            "total": 37
+        }
+    }
+}
