@@ -1,4 +1,5 @@
 import torch
+import random
 from PIL import Image
 import os
 from typing import Union
@@ -43,27 +44,36 @@ class SmolVLMInfer(object):
         logging.info("Model + processor loaded successfully!")
         return processor, model
     
-    def get_response(self, user_prompt: str, decoded_image: Union[Image.Image, None] = None):
+    def get_multiple_responses(
+        self,
+        user_prompt: str,
+        decoded_image: Union[Image.Image, None] = None,
+        n: int = 5,
+    ):
+        gens = []
+        for _ in range(n):
+            # --- NEW: make each call stochastic --------------------------
+            g = torch.Generator(device=self.model.device)
+            g.manual_seed(random.randint(1, 2**30))
+            gens.append(self.get_response(user_prompt, decoded_image, generator=g))
+        return gens
+
+    def get_response(
+        self,
+        user_prompt: str,
+        decoded_image: Union[Image.Image, None] = None,
+        generator: torch.Generator | None = None,
+    ):
         try:
-            response = self.infer([self._create_query(user_prompt, decoded_image)])
+            response = self.infer(
+                [self._create_query(user_prompt, decoded_image)], generator
+            )
         except Exception as e:
             logging.error(e)
             return ""
         return response
 
-    def get_multiple_responses(self, user_prompt, decoded_image=None, n=5):
-    messages = [self._create_query(user_prompt, decoded_image)] * n
-    responses = []
-    for msg in messages:
-        try:
-            result = self.infer([msg])
-            responses.append(result)
-        except Exception as e:
-            logging.error(f"Error in response generation: {e}")
-            responses.append("")
-    return responses
-
-    def infer(self, messages):
+    def infer(self, messages, generator=None):
         logging.debug(f"Infer: {messages}")  # Log inference start
         inputs = self.processor.apply_chat_template(
             messages,
@@ -73,7 +83,15 @@ class SmolVLMInfer(object):
             return_tensors="pt",
         ).to(self.model.device, dtype=torch.bfloat16)
 
-        generated_ids = self.model.generate(**inputs, do_sample=False, max_new_tokens=64)
+        MAX_NEW_TOKENS = 64
+        generated_ids = self.model.generate(
+            **inputs,
+            do_sample=True,
+            top_p=0.85,
+            temperature=0.7,
+            max_new_tokens=MAX_NEW_TOKENS,
+            generator=generator,  
+        )
         generated_texts = self.processor.batch_decode(
             generated_ids,
             skip_special_tokens=True,
