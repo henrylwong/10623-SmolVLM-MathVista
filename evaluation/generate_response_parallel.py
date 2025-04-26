@@ -5,7 +5,7 @@ from tqdm import tqdm
 
 from datasets import load_dataset
 from utilities import read_json, save_json
-from utilities_aggregation import majority_vote
+from utilities import majority_vote
 from models import smolvlm
 
 def parse_args():
