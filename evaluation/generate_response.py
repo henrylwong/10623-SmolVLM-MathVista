@@ -98,6 +98,9 @@ def parse_args():
     parser.add_argument('--azure_openai_api_key', type=str, default=os.getenv("AZURE_OPENAI_API_KEY"))
     parser.add_argument('--azure_openai_api_version', type=str, default=os.getenv("AZURE_OPENAI_API_VERSION"))
     parser.add_argument('--azure_openai_model', type=str, default=os.getenv("AZURE_OPENAI_MODEL"))
+    
+    # mathvista/smolvlm specific args
+    parser.add_argument('--run_tot', action='store_true', help='run generation with tree-of-thoughts')
     args = parser.parse_args()
     return args
 
@@ -252,7 +255,14 @@ def main():
         logging.debug("--------------------------------------------------------------")
         logging.debug(f"Generating response for problem: {problem_id}...")
         try:
-            response = model.get_response(user_prompt=query, decoded_image=problem_decoded_image)
+            if args.run_tot:
+                if not (hasattr(model, 'get_tot_response') and callable(getattr(model, 'get_tot_response'))):
+                    raise AttributeError(f"{type(obj).__name__} must implement 'get_tot_response()' to run tree-of-thoughts")
+                response = model.get_tot_response(user_prompt=query, decoded_image=problem_decoded_image)
+                pdb.set_trace()
+            else:
+                response = model.get_response(user_prompt=query, decoded_image=problem_decoded_image)
+
             results[problem_id] = problem
             results[problem_id]['query'] = query
             if args.shot_type == 'solution':
