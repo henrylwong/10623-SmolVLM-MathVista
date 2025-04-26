@@ -4,7 +4,7 @@ import sympy
 import pandas as pd
 import pdb
 
-from tree_of_thoughts.prompts_mathvista import standard_prompt, cot_prompt, propose_prompt, value_prompt, value_last_step_prompt
+from tree_of_thoughts.prompts_mathvista import standard_prompt, cot_first_prompt, cot_prompt, cot_last_prompt, propose_prompt, value_prompt, value_last_step_prompt
 
 DATA_PATH = os.path.join(os.path.dirname(__file__), '..', 'data')
 LINE_DELIMITER = '\n'
@@ -42,9 +42,19 @@ class MathVistaTask(object):
         return standard_prompt.format(input=x)
 
     @staticmethod
+    def cot_first_prompt_wrap(x: str, y:str='') -> str:
+        x = _preprocess_user_prompt(x)
+        return cot_first_prompt.format(input=x) # @hlwong: verify
+
+    @staticmethod
     def cot_prompt_wrap(x: str, y:str='') -> str:
         x = _preprocess_user_prompt(x)
         return cot_prompt.format(input=x, steps=y) # @hlwong: verify
+    
+    @staticmethod
+    def cot_last_prompt_wrap(x: str, y:str='') -> str:
+        x = _preprocess_user_prompt(x)
+        return cot_last_prompt.format(input=x, steps=y) # @hlwong: verify
 
     @staticmethod
     def value_prompt_wrap(x: str, y: str) -> str:
@@ -65,7 +75,7 @@ class MathVistaTask(object):
         """
         Map the model's output to a numeric value for MathVista.
         """
-        pdb.set_trace()
+        # pdb.set_trace()
         value_name = str(value_output).strip().lower().split(LINE_DELIMITER)[-1]
         value_map = {
             'impossible': 0.001,
@@ -74,6 +84,9 @@ class MathVistaTask(object):
             'likely': 1,
             'sure': 2
         }
-        value = value_map.get(value_name, 0)
         # value = sum(value_map.get(name, 0) for name in value_names) # @hlwong:
-        return value
+    
+        for k, v in value_map.items():
+            if k in value_name:
+                return v
+        return 0

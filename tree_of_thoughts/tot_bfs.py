@@ -24,12 +24,19 @@ def get_values(model_infer, task, user_prompt, decoded_image, ys):
         values.append(value)
     return values
 
-def get_samples(model_infer, task, user_prompt, decoded_image, response, prompt_sample, num_samples):
-    pdb.set_trace()
+def get_samples(model_infer, task, user_prompt, decoded_image, response, prompt_sample, num_samples, step=None, max_depth=None):
+    if step is None or max_depth is None:
+        raise ValueError("get_samples(): value or max_depth are not defined.")
+
     if prompt_sample == 'standard':
         prompt = task.standard_prompt_wrap(user_prompt, response)
     elif prompt_sample == 'cot':
-        prompt = task.cot_prompt_wrap(user_prompt, response)
+        if step == 0:
+            prompt = task.cot_first_prompt_wrap(user_prompt, response)
+        elif step == max_depth - 1:
+            prompt = task.cot_last_prompt_wrap(user_prompt, response)
+        else:
+            prompt = task.cot_prompt_wrap(user_prompt, response)
     else:
         raise ValueError(f'prompt_sample {prompt_sample} not recognized')
     samples = model_infer.get_multiple_responses(prompt, decoded_image, num_samples)
@@ -37,17 +44,43 @@ def get_samples(model_infer, task, user_prompt, decoded_image, response, prompt_
 
 def solve(model_infer, task, user_prompt, decoded_image, debug=True):
     ys = list([""]) # maintain current ouput candidates
+    results = list()
     infos = list()
     for step in range(task.max_depth):
+        # Separate finished and unfinished paths
+        unfinished_ys = list()
+        for y in ys:
+            if "answer" in y.lower():
+                results.append(y)
+            else:
+                unfinished_ys.append(y)
+        if not unfinished_ys:
+            break
+
         # Generation (sample-based)
         new_ys = list()
         for y in ys:
-            new_ys.extend(get_samples(model_infer, task, user_prompt, decoded_image, y, "cot", NUM_GENERATE_SAMPLES))
+            new_ys.extend(get_samples(
+                model_infer, task, user_prompt, decoded_image, y, "cot", NUM_GENERATE_SAMPLES,
+                step = step, max_depth=task.max_depth
+            ))
         ids = list(range(len(new_ys)))
-        pdb.set_trace()
+        # pdb.set_trace()
 
         # Evaluation (values-based)
         values = get_values(model_infer, task, user_prompt, decoded_image, new_ys)
+
+        # Begin Value Filtering
+        # If any value is "sure" or "likely", keep only those
+        # Otherwise, if any value is non-zero, filter out all zero values
+        thresholds = [1, 0.001]  # likely, impossible
+        for thresh in thresholds:
+            idxs = [i for i, v in enumerate(values) if v >= thresh]
+            if idxs:
+                new_ys = [new_ys[i] for i in idxs]
+                values = [values[i] for i in idxs]
+                ids = list(range(len(new_ys)))
+                break
 
         # Selection
         if METHOD_SELECT == 'sample':
@@ -66,7 +99,20 @@ def solve(model_infer, task, user_prompt, decoded_image, debug=True):
         
         infos.append({'step': step, 'x': user_prompt, 'ys': ys, 'new_ys': new_ys, 'values': values, 'select_new_ys': select_new_ys})
         ys = select_new_ys
-    
+
     if debug: 
-        print(ys)
-    return ys, {'steps': infos}
+        print(f'All ys: {ys}\n\n') 
+
+    def select_best(candidates):
+        if not candidates:
+            return ""
+        vals = get_values(model_infer, task, user_prompt, decoded_image, candidates)
+        best_idx = np.argmax(vals)
+        if debug:
+            print(f'Best answer: {candidates[best_idx]} (value: {vals[best_idx]})')
+        return candidates[best_idx]
+
+    # Prefer finished results, otherwise best unfinished
+    best_answer = select_best(results) if results else select_best(ys)
+    pdb.set_trace()
+    return best_answer, {'steps': infos}

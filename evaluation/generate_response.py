@@ -277,6 +277,7 @@ def main():
         except Exception as e:
             logging.error(f"Error in extracting answer for {problem_id}")
             logging.error(e)
+            # pdb.post_mortem()
             results[problem_id] = problem
             results[problem_id]['error'] = str(e)
 

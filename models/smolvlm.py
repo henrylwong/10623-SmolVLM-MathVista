@@ -66,7 +66,7 @@ class SmolVLMInfer(object):
         pdb.set_trace()
         mathvista_task = task_mathvista.MathVistaTask(TOT_MAX_DEPTH)
         ys, breakdown = tot_bfs.solve(self, mathvista_task, user_prompt, decoded_image, True)
-        return ys
+        return ys[0]
 
     def infer(self, messages):
         logging.debug(f"Infer: {messages}")  # Log inference start
