@@ -1,17 +1,15 @@
 cd ../evaluation
 
 ##### smolvlm #####
-# generate solution
+generate solution
 python generate_response.py \
 --model smolvlm \
 --output_dir ../results/smolvlm/tot \
 --output_file output_smolvlm.json \
 --run_tot
 
-exit 0
-
 # extract answer
-python extract_answer.py \
+python extract_smolvlm_answer.py \
 --output_dir ../results/smolvlm/tot \
 --output_file output_smolvlm.json 
 

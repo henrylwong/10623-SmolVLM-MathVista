@@ -13,6 +13,7 @@ from tqdm import tqdm
 
 from utilities import read_json, save_json
 
+CACHE_DIR = "hf_cache"
 
 def get_most_similar(prediction, choices):
     """
@@ -134,7 +135,7 @@ def main():
     args = parse_args()
 
     logging.info(f"Loading dataset {args.dataset_name}, split {args.test_split_name}...")
-    data_list = load_dataset(args.dataset_name, split=args.test_split_name)
+    data_list = load_dataset(args.dataset_name, split=args.test_split_name, cache_dir=CACHE_DIR)
     # Convert Hugging Face data into dictionary to match local data format
     # TODO: Convert scripts not to depend on dictionary .json format. Update to use .jsonl format
     ground_truth_problems = {item['pid']: item for item in data_list}
