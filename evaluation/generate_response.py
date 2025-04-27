@@ -257,9 +257,9 @@ def main():
         try:
             if args.run_tot:
                 if not (hasattr(model, 'get_tot_response') and callable(getattr(model, 'get_tot_response'))):
-                    raise AttributeError(f"{type(obj).__name__} must implement 'get_tot_response()' to run tree-of-thoughts")
+                    raise AttributeError(f"{type(model).__name__} must implement 'get_tot_response()' to run tree-of-thoughts")
                 response = model.get_tot_response(user_prompt=query, decoded_image=problem_decoded_image)
-                pdb.set_trace()
+                # pdb.set_trace()
             else:
                 response = model.get_response(user_prompt=query, decoded_image=problem_decoded_image)
 

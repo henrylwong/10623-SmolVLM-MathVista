@@ -9,14 +9,17 @@ from tree_of_thoughts.prompts_mathvista import standard_prompt, cot_first_prompt
 DATA_PATH = os.path.join(os.path.dirname(__file__), '..', 'data')
 LINE_DELIMITER = '\n'
 ANSWER_PREFIX = "answer:"
+USER_PROMPT_QUESTION_PREFIX = "Question: "
 USER_PROMPT_SOLN_PREFIX = "Solution:"
 
 def _preprocess_user_prompt(user_prompt: str) -> str:
     # Preprocess user_prompt
-    soln_idx = user_prompt.find(USER_PROMPT_SOLN_PREFIX)
-    if soln_idx == -1:
-        raise(ValueError("Solution prefix not found within user_prompt."))
-    user_prompt = user_prompt[:soln_idx]
+    
+    question_idx = user_prompt.find(USER_PROMPT_QUESTION_PREFIX)
+    soln_idx = user_prompt.rfind(USER_PROMPT_SOLN_PREFIX)
+    if question_idx == -1 or soln_idx == -1:
+        raise(ValueError("_preprocess_user_prompt(): question or solution prefixes not found within user_prompt."))
+    user_prompt = user_prompt[question_idx + len(USER_PROMPT_QUESTION_PREFIX) : soln_idx]
     return user_prompt
 
 class MathVistaTask(object):

@@ -18,7 +18,7 @@ CACHE_DIR = "hf_cache"
 LOG_BASENAME = "smolvlminfer.log"
 OUTPUT_DELIM = "Assistant:"
 
-MAX_NEW_TOKENS = 128
+MAX_NEW_TOKENS = 256
 TOT_MAX_DEPTH = 5
 
 class SmolVLMInfer(object):
@@ -46,7 +46,7 @@ class SmolVLMInfer(object):
             model_path,
             cache_dir=CACHE_DIR,
             torch_dtype=torch.bfloat16,
-            # _attn_implementation="flash_attention_2"
+            _attn_implementation="flash_attention_2"
         ).to("cuda")
         logging.info("Model + processor loaded successfully!")
         return processor, model
@@ -63,10 +63,10 @@ class SmolVLMInfer(object):
         return [self.get_response(user_prompt, decoded_image) for _ in range(n)]
 
     def get_tot_response(self, user_prompt: str, decoded_image: Union[Image.Image, None] = None):
-        pdb.set_trace()
+        # pdb.set_trace()
         mathvista_task = task_mathvista.MathVistaTask(TOT_MAX_DEPTH)
-        ys, breakdown = tot_bfs.solve(self, mathvista_task, user_prompt, decoded_image, True)
-        return ys[0]
+        y, breakdown = tot_bfs.solve(self, mathvista_task, user_prompt, decoded_image, True)
+        return y
 
     def infer(self, messages):
         logging.debug(f"Infer: {messages}")  # Log inference start

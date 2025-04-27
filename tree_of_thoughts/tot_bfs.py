@@ -40,7 +40,7 @@ def get_samples(model_infer, task, user_prompt, decoded_image, response, prompt_
     else:
         raise ValueError(f'prompt_sample {prompt_sample} not recognized')
     samples = model_infer.get_multiple_responses(prompt, decoded_image, num_samples)
-    return [response + '\n' + sample for sample in samples]
+    return [(response + '\n' + sample).strip() for sample in samples]
 
 def solve(model_infer, task, user_prompt, decoded_image, debug=True):
     ys = list([""]) # maintain current ouput candidates
@@ -114,5 +114,5 @@ def solve(model_infer, task, user_prompt, decoded_image, debug=True):
 
     # Prefer finished results, otherwise best unfinished
     best_answer = select_best(results) if results else select_best(ys)
-    pdb.set_trace()
+    # pdb.set_trace()
     return best_answer, {'steps': infos}
