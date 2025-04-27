@@ -35,11 +35,15 @@ def main():
         candidates = model.get_multiple_responses(query, decoded_img, n=args.n_samples)
         final = majority_vote(candidates)
 
-        results[pid] = {
-            "query": query,
-            "candidates": candidates,
-            "majority_vote": final
-        }
+    results[pid] = {
+        "pid": pid,
+        "query": query,
+        "choices": item["choices"],
+        "answer_type": item["answer_type"],
+        "question_type": item["question_type"],
+        "precision": item["precision"],
+        "candidates_raw": candidates   
+    }
 
     save_json(results, output_path)
     print(f"Saved to {output_path}")
