@@ -9,13 +9,58 @@ from word2number import w2n
 
 from collections import Counter
 
+import re
+from word2number import w2n
+
+PREFIX_PAT = re.compile(
+    r"^(the\s+answer\s+is|answer\s*:|it\s+is|it\s+should\s+be|thus\s*,?|therefore\s*,?)\s+",
+    flags=re.I,
+)
+PUNCT_PAT  = re.compile(r"[^\w\.\-]")          # drop punctuation except dot & dash
+
+def normalize_answer(raw: str) -> str:
+    """
+    Strip phrases, punctuation, and whitespace;
+    convert number words to digits; lowercase everything.
+    """
+    if not raw:
+        return ""
+
+    ans = raw.strip()
+
+    # remove common prefixes
+    ans = PREFIX_PAT.sub("", ans)
+
+    # if the answer is a full sentence, take the last token after cleanup
+    tokens = ans.split()
+    ans = tokens[-1] if len(tokens) > 1 else tokens[0]
+
+    # remove ending punctuation like '.' or ','
+    ans = ans.rstrip(".,;:")
+
+    # convert words ("fourteen") → "14" if possible
+    try:
+        ans_num = str(w2n.word_to_num(ans.lower()))
+        return ans_num
+    except ValueError:
+        pass
+
+    # fallback: drop stray punctuation and lowercase
+    ans = PUNCT_PAT.sub("", ans).lower()
+
+    return ans
+
+
 def majority_vote(candidates):
-    counts = Counter(candidates)
+    cleaned = [normalize_answer(c) for c in candidates if c]
+    counts  = Counter(cleaned)
     if not counts:
         return ""
+
     max_count = max(counts.values())
     top = [k for k, v in counts.items() if v == max_count]
-    return top[0]  # break ties 
+
+    return top[0] # break ties 
 
 
 def create_dir(output_dir):
