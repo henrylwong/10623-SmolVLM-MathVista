@@ -8,7 +8,7 @@ from tqdm import tqdm
 import pdb
 
 from evaluation.prompts.ext_ans import demo_prompt
-from utilities import read_json, save_json
+from utilities import read_json, save_json, majority_vote
 
 CACHE_DIR = "hf_cache"
 
@@ -96,7 +96,6 @@ def extract_answer(model, response, problem, tokenizer, quick_extract=False):
 
     return ""
 
-
 def parse_args():
     parser = argparse.ArgumentParser()
     # input
@@ -161,7 +160,16 @@ def main():
 
         assert label in problem
         response = problem[label]
-        extraction = extract_answer(model, response, problem, tokenizer, args.quick_extract)
+        if isinstance(response, list): # run majority-voting on multiple responses
+            extraction = "" # default
+            extractions = list()
+            for resp in response:
+                extractions.append(extract_answer(model, resp, problem, tokenizer, args.quick_extract))
+            if len(extractions) != 0:
+                extraction = majority_vote([ext for ext in extractions if ext != ""])
+            results[pid]['extractions'] = extractions
+        else:
+            extraction = extract_answer(model, response, problem, tokenizer, args.quick_extract)
         results[pid]['extraction'] = extraction
 
         if (i % args.save_every == 0 and i > 0) or i == len(test_pids) - 1:

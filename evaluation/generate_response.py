@@ -14,7 +14,7 @@ from evaluation.build_query import create_query_data
 from utilities import read_json, save_json
 
 
-def verify_response(response):
+def _verify_response(response):
     if isinstance(response, str):
         response = response.strip()
     if response == "" or response is None:
@@ -23,6 +23,10 @@ def verify_response(response):
         return False
     return True
 
+def verify_response(response):
+    if isinstance(response, list): # handles cases w/ multiple generation responses
+        return any([_verify_response(resp) for resp in response])
+    return _verify_response(response)
 
 def evaluate_code(code_string):
     # execute_code_and_capture_output
@@ -100,6 +104,8 @@ def parse_args():
     parser.add_argument('--azure_openai_model', type=str, default=os.getenv("AZURE_OPENAI_MODEL"))
     
     # mathvista/smolvlm specific args
+    # parser.add_argument('--run_maj', action='store_true', help='run generation with majority-voting')
+    parser.add_argument('--run_maj', type=int, default=0, help='run generation with majority-voting: number of responses (0 to disable)')
     parser.add_argument('--run_tot', action='store_true', help='run generation with tree-of-thoughts')
     args = parser.parse_args()
     return args
@@ -108,6 +114,8 @@ def parse_args():
 def main():
     logging.info("MathVista: Generating Responses - Start")
     args = parse_args()
+
+    assert not (args.run_maj and args.run_tot) # run_maj and run_tot are mutually exclusive
 
     # load data
     logging.info(f"Loading dataset {args.dataset_name}, split {args.test_split_name}...")
@@ -260,6 +268,8 @@ def main():
                     raise AttributeError(f"{type(model).__name__} must implement 'get_tot_response()' to run tree-of-thoughts")
                 response = model.get_tot_response(user_prompt=query, decoded_image=problem_decoded_image)
                 # pdb.set_trace()
+            elif args.run_maj:
+                response = model.get_multiple_responses(user_prompt=query, decoded_image=problem_decoded_image)
             else:
                 response = model.get_response(user_prompt=query, decoded_image=problem_decoded_image)
 

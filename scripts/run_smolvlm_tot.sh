@@ -1,7 +1,7 @@
 cd ../evaluation
 
 ##### smolvlm #####
-generate solution
+# generate solution
 python generate_response.py \
 --model smolvlm \
 --output_dir ../results/smolvlm/tot \
